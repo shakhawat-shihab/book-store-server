@@ -6,8 +6,8 @@ const { insertInLog } = require("../server/logFile");
 
 class BookController {
   async getAll(req, res) {
-    insertInLog(req?.originalUrl, req.query, req.params, req.body);
     try {
+      insertInLog(req?.originalUrl, req.query, req.params, req.body);
       const {
         sortParam,
         sortOrder,
@@ -21,7 +21,7 @@ class BookController {
         rating,
         ratingFil,
         page = 1,
-        limit,
+        limit = 10,
       } = req.query;
       if (page < 1 || limit < 0) {
         return sendResponse(
@@ -49,8 +49,11 @@ class BookController {
           HTTP_STATUS.UNPROCESSABLE_ENTITY,
           "Invalid sort parameters provided"
         );
-      } else {
-        sortObj = { [sortParam]: sortOrder === "asc" ? 1 : -1 };
+      }
+      //nothing provided about sorting
+      else {
+        sortObj = { [sortParam || "_id"]: sortOrder === "desc" ? -1 : 1 };
+        // console.log(sortObj);
       }
       const filter = {};
 
@@ -92,9 +95,10 @@ class BookController {
       const bookCount = await BookModel.find().count();
       const filteredBookCount = await BookModel.find(filter).count();
       const books = await BookModel.find(filter)
-        .sort({
-          [sortParam]: sortOrder === "asc" ? 1 : -1,
-        })
+        // .sort({
+        //   [sortParam]: sortOrder === "asc" ? 1 : -1,
+        // })
+        .sort(sortObj)
         .skip((page - 1) * limit)
         .limit(limit ? limit : 100)
         .populate("discounts", " -books -createdAt -updatedAt  -__v ")
@@ -139,6 +143,35 @@ class BookController {
         limit: parseInt(limit),
         books: discountedBooks,
       });
+    } catch (error) {
+      console.log(error);
+      return sendResponse(
+        res,
+        HTTP_STATUS.INTERNAL_SERVER_ERROR,
+        "Internal server error"
+      );
+    }
+  }
+
+  async getBookById(req, res) {
+    try {
+      insertInLog(req?.originalUrl, req.query, req.params, req.body);
+      const { bookId } = req.params;
+      const book = await BookModel.findOne({ _id: bookId })
+        .populate("discounts", " -books -createdAt -updatedAt  -__v ")
+        .populate("reviews", " -__v ")
+        .select("-createdAt -updatedAt -__v");
+
+      if (!book) {
+        return sendResponse(res, HTTP_STATUS.NOT_FOUND, "Book not Found");
+      }
+
+      return sendResponse(
+        res,
+        HTTP_STATUS.OK,
+        "Successfully got all books",
+        book
+      );
     } catch (error) {
       console.log(error);
       return sendResponse(

@@ -6,6 +6,8 @@ const { isAuthenticated, isAdmin } = require("../middleware/auth");
 
 routes.get("/all", BookController.getAll);
 
+routes.get("/find-by-id/:bookId", BookController.getBookById);
+
 routes.post(
   "/create",
   isAuthenticated,

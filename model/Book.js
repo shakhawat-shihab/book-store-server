@@ -70,6 +70,7 @@ const bookSchema = new mongoose.Schema(
         ref: "Discount",
       },
     ],
+    images: [String],
   },
   { timestamps: true }
 );
