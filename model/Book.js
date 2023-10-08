@@ -71,6 +71,9 @@ const bookSchema = new mongoose.Schema(
       },
     ],
     images: [String],
+    views: {
+      type: Number,
+    },
   },
   { timestamps: true }
 );

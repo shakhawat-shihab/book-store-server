@@ -20,6 +20,7 @@ class BookController {
         stockFil,
         rating,
         ratingFil,
+        views,
         page = 1,
         limit = 10,
       } = req.query;
@@ -41,7 +42,8 @@ class BookController {
           sortParam !== "rating" &&
           sortParam !== "reviewCount" &&
           sortParam !== "stock" &&
-          sortParam !== "price") ||
+          sortParam !== "price" &&
+          sortParam !== "views") ||
         (sortOrder && sortOrder !== "asc" && sortOrder !== "desc")
       ) {
         return sendResponse(
