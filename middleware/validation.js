@@ -63,24 +63,24 @@ const authValidator = {
       .bail()
       .matches(/(^(\+88|0088)?(01){1}[3456789]{1}(\d){8})$/)
       .withMessage("Phone number must be in a valid format"),
-    body("address.area")
-      .exists()
-      .withMessage("Area was not provided")
-      .bail()
-      .isString()
-      .withMessage("Area must be a string"),
-    body("address.city")
-      .exists()
-      .withMessage("City was not provided")
-      .bail()
-      .isString()
-      .withMessage("City must be a string"),
-    body("address.country")
-      .exists()
-      .withMessage("Country was not provided")
-      .bail()
-      .isString()
-      .withMessage("Country must be a string"),
+    // body("address.area")
+    //   .exists()
+    //   .withMessage("Area was not provided")
+    //   .bail()
+    //   .isString()
+    //   .withMessage("Area must be a string"),
+    // body("address.city")
+    //   .exists()
+    //   .withMessage("City was not provided")
+    //   .bail()
+    //   .isString()
+    //   .withMessage("City must be a string"),
+    // body("address.country")
+    //   .exists()
+    //   .withMessage("Country was not provided")
+    //   .bail()
+    //   .isString()
+    //   .withMessage("Country must be a string"),
   ],
   login: [
     body("email").exists().withMessage("Email must be provided").bail(),

@@ -76,6 +76,32 @@ const isAdmin = (req, res, next) => {
   }
 };
 
+const checkToken = (req, res, next) => {
+  try {
+    const { token } = req.params;
+    const validate = jsonwebtoken.verify(token, process.env.SECRET_KEY);
+    if (validate) {
+      const validate = jsonwebtoken.decode(token);
+      console.log(validate);
+      req.body.authId = validate?._id;
+      next();
+    } else {
+      return sendResponse(
+        res,
+        HTTP_STATUS.UNAUTHORIZED,
+        "Invalid token provided"
+      );
+    }
+  } catch (error) {
+    // console.log(error);
+    return sendResponse(
+      res,
+      HTTP_STATUS.INTERNAL_SERVER_ERROR,
+      "Internal server error"
+    );
+  }
+};
+
 const checkUserIdWithParamsId = (req, res, next) => {
   try {
     // console.log(req.params);
@@ -133,4 +159,5 @@ module.exports = {
   isAdmin,
   checkUserIdWithParamsId,
   checkUserIdWithBodyId,
+  checkToken,
 };

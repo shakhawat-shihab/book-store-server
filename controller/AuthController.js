@@ -30,7 +30,7 @@ class AuthModelController {
         return sendResponse(
           res,
           HTTP_STATUS.UNAUTHORIZED,
-          "UserModel is not registered"
+          "User is not registered"
         );
       }
       const checkPassword = await bcrypt.compare(password, auth.password);
@@ -91,19 +91,25 @@ class AuthModelController {
         return sendResponse(
           res,
           HTTP_STATUS.CONFLICT,
-          "Email is already registered and userName is not available"
+          "Email is already registered and userName is not available",
+          [
+            { msg: "Email is already registered", path: "email" },
+            { msg: "userName is not available", path: "userName" },
+          ]
         );
       } else if (auth?.email == email) {
         return sendResponse(
           res,
           HTTP_STATUS.CONFLICT,
-          "Email is already registered"
+          "Email is already registered",
+          [{ msg: "Email is already registered", path: "email" }]
         );
       } else if (auth?.userName == userName) {
         return sendResponse(
           res,
           HTTP_STATUS.CONFLICT,
-          "userName is not available"
+          "userName is not available",
+          [{ msg: "userName is not available", path: "userName" }]
         );
       }
 
@@ -136,6 +142,35 @@ class AuthModelController {
       return sendResponse(res, HTTP_STATUS.OK, "Successfully signed up", user);
     } catch (error) {
       // console.log(error);
+      return sendResponse(
+        res,
+        HTTP_STATUS.INTERNAL_SERVER_ERROR,
+        "Internal server error"
+      );
+    }
+  }
+
+  async aboutMe(req, res) {
+    try {
+      insertInLog(req?.originalUrl, req.query, req.params);
+
+      const { authId } = req.body;
+
+      const auth = await AuthModel.findOne({ _id: authId })
+        .populate("user", "-createdAt -updatedAt -__v")
+        .select("-createdAt -updatedAt -__v");
+
+      const responseAuthModel = auth.toObject();
+      delete responseAuthModel.password;
+
+      return sendResponse(
+        res,
+        HTTP_STATUS.OK,
+        "Valid Token Provided",
+        responseAuthModel
+      );
+    } catch (error) {
+      console.log(error);
       return sendResponse(
         res,
         HTTP_STATUS.INTERNAL_SERVER_ERROR,

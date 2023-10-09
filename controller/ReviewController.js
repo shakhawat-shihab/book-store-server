@@ -3,6 +3,7 @@ const HTTP_STATUS = require("../constants/statusCodes");
 const ReviewModel = require("../model/Review");
 const BookModel = require("../model/Book");
 const { sendResponse } = require("../utils/common");
+const { insertInLog } = require("../server/logFile");
 
 class ReviewController {
   async create(req, res) {
