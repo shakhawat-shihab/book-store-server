@@ -153,7 +153,6 @@ class AuthModelController {
   async aboutMe(req, res) {
     try {
       insertInLog(req?.originalUrl, req.query, req.params);
-
       const { authId } = req.body;
 
       const auth = await AuthModel.findOne({ _id: authId })

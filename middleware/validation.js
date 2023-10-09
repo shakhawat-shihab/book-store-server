@@ -86,6 +86,25 @@ const authValidator = {
     body("email").exists().withMessage("Email must be provided").bail(),
     body("password").exists().withMessage("Password must be provided").bail(),
   ],
+  jwtValidator: [
+    param("token")
+      .exists()
+      .withMessage("Token must be provided")
+      .bail()
+      // .matches(/^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.[A-Za-z0-9-_.+\/=]*$/)
+      // .withMessage("Token is not in valid JWT token format"),
+      .custom((value, { req }) => {
+        const jwtToken = value;
+        const jwtRegex =
+          /^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.[A-Za-z0-9-_.+\/=]*$/;
+        if (jwtRegex.test(jwtToken)) {
+          // console.log("ok");
+          return true;
+        }
+        // console.log("not ok");
+        throw new Error("token format is invalid");
+      }),
+  ],
 };
 
 const userValidator = {

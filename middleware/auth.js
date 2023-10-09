@@ -1,6 +1,7 @@
 const HTTP_STATUS = require("../constants/statusCodes");
 const jsonwebtoken = require("jsonwebtoken");
 const { sendResponse } = require("../utils/common");
+const { validationResult } = require("express-validator");
 
 const isAuthenticated = (req, res, next) => {
   try {
@@ -79,6 +80,15 @@ const isAdmin = (req, res, next) => {
 const checkToken = (req, res, next) => {
   try {
     const { token } = req.params;
+    const validation = validationResult(req).array();
+    if (validation.length > 0) {
+      return sendResponse(
+        res,
+        HTTP_STATUS.UNPROCESSABLE_ENTITY,
+        "Failed to add the user",
+        validation
+      );
+    }
     const validate = jsonwebtoken.verify(token, process.env.SECRET_KEY);
     if (validate) {
       const validate = jsonwebtoken.decode(token);
@@ -93,7 +103,7 @@ const checkToken = (req, res, next) => {
       );
     }
   } catch (error) {
-    // console.log(error);
+    console.log("e ", error);
     return sendResponse(
       res,
       HTTP_STATUS.INTERNAL_SERVER_ERROR,
@@ -145,7 +155,7 @@ const checkUserIdWithBodyId = (req, res, next) => {
       );
     }
   } catch (error) {
-    // console.log(error);
+    console.log(error);
     return sendResponse(
       res,
       HTTP_STATUS.INTERNAL_SERVER_ERROR,

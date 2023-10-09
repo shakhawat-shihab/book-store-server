@@ -6,6 +6,11 @@ const { checkToken } = require("../middleware/auth");
 
 routes.post("/log-in", authValidator.login, AuthController.login);
 routes.post("/sign-up", authValidator.signup, AuthController.signup);
-routes.get("/check-me/:token", checkToken, AuthController.aboutMe);
+routes.get(
+  "/check-me/:token",
+  authValidator.jwtValidator,
+  checkToken,
+  AuthController.aboutMe
+);
 
 module.exports = routes;
